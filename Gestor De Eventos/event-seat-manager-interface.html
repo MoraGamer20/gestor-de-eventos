@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Asientos de Evento</title>
+    <style>
+        :root {
+            --color-primary: #07405a;
+            --color-primary-hover: #05344a;
+            --color-accent: #e76a24;
+            --color-accent-hover: #c95a1e;
+            --color-background: #F5F7FA;
+            --color-text: #333333;
+            --color-text-light: #6E7A8A;
+            --color-border: #DADEE6;
+            --color-white: #FFFFFF;
+            --color-active: #66BB6A;
+            --color-inactive: #9E9E9E;
+            --color-finished: #EF5350;
+            --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --radius: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Roboto', sans-serif;
+        }
+
+        body {
+            background-color: var(--color-background);
+            color: var(--color-text);
+            line-height: 1.6;
+        }
+
+        /* Barra superior institucional */
+        .navbar {
+            background: #07405a;
+            color: #fff;
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            height: 80px;
+            justify-content: space-between;
+        }
+        .navbar .logo-titulo {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+        .navbar img {
+            height: 48px;
+            margin-right: 8px;
+        }
+        .navbar .titulo {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+        .navbar .subtitulo {
+            font-size: 1rem;
+            font-weight: normal;
+            margin-top: -6px;
+            color: #cfe3f2;
+        }
+        .navbar .menu {
+            display: flex;
+            gap: 28px;
+            align-items: center;
+        }
+        .navbar .menu a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .navbar .menu a:hover {
+            color: #ffb366;
+        }
+        .navbar .btn-nuevo-evento {
+            background: #e76a24;
+            color: #fff;
+            border: none;
+            border-radius: 7px;
+            padding: 10px 22px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            transition: background 0.2s;
+        }
+        .navbar .btn-nuevo-evento:hover {
+            background: #c95a1e;
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 40px auto 0 auto;
+            padding: 0 30px;
+            padding-bottom: 140px; /* Añadido para evitar que el footer tape el contenido */
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--color-text);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--color-primary);
+            color: var(--color-white);
+            border: none;
+            border-radius: var(--radius);
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover {
+            background-color: var(--color-primary-hover);
+        }
+
+        .btn-secondary {
+            background-color: var(--color-white);
+            color: var(--color-primary);
+            border: 1px solid var(--color-border);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--color-background);
+        }
+
+        .btn-icon {
+            margin-right: 8px;
+        }
+
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .filter-btn {
+            background-color: var(--color-white);
+            color: var(--color-text-light);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius);
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn.active {
+            background-color: var(--color-primary);
+            color: var(--color-white);
+            border-color: var(--color-primary);
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .event-card {
+            background-color: var(--color-white);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .event-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .event-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .event-date {
+            color: var(--color-text-light);
+            font-size: 14px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background-color: rgba(102, 187, 106, 0.1);
+            color: var(--color-active);
+        }
+
+        .status-inactive {
+            background-color: rgba(158, 158, 158, 0.1);
+            color: var(--color-inactive);
+        }
+
+        .status-finished {
+            background-color: rgba(239, 83, 80, 0.1);
+            color: var(--color-finished);
+        }
+
+        .event-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .info-item {
+            font-size: 14px;
+            color: var(--color-text-light);
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: var(--color-text);
+        }
+
+        .event-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        /* Pantalla de detalle */
+        .detail-container {
+            background-color: var(--color-white);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .detail-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .attendees-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 24px;
+        }
+
+        .attendees-table th,
+        .attendees-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .attendees-table th {
+            font-weight: 600;
+            color: var(--color-text-light);
+            font-size: 14px;
+        }
+
+        .attendees-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .action-icon {
+            cursor: pointer;
+            color: var(--color-text-light);
+            transition: color 0.2s;
+        }
+
+        .action-icon:hover {
+            color: var(--color-primary);
+        }
+
+        /* Modal Form */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            border: none;
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        .modal-content {
+            background-color: var(--color-white);
+            border-radius: var(--radius);
+            padding: 24px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--color-text-light);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius);
+            font-size: 14px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+
+        .error-message {
+            color: var(--color-finished);
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        /* Pie de página institucional */
+        .footer {
+            background: #07405a;
+            color: #fff;
+            padding: 40px 0 20px 0;
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100vw;
+            z-index: 100;
+        }
+        .footer .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 40px;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .footer h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .footer ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .footer ul li {
+            margin-bottom: 7px;
+        }
+        .footer a {
+            color: #cfe3f2;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .footer a:hover {
+            color: #ffb366;
+        }
+        .footer .footer-bottom {
+            text-align: center;
+            color: #cfe3f2;
+            font-size: 0.95rem;
+            margin-top: 25px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Barra superior institucional -->
+    <div class="navbar">
+        <div class="logo-titulo">
+            <img src="escudo-uat.png" alt="Escudo UAT" />
+            <div>
+                <div class="titulo">Gestor de Asientos de Evento</div>
+                <div class="subtitulo">Universidad Autónoma de Tamaulipas</div>
+            </div>
+        </div>
+        <div class="menu">
+            <a href="event-seat-manager-interface.html">Inicio</a>
+            <a href="event-seat-manager-interface.html#eventos">Eventos</a>
+            <a href="event-seat-manager-interface.html#reportes">Reportes</a>
+            <a href="event-seat-manager-interface.html#ayuda">Ayuda</a>
+            <button class="btn-nuevo-evento" id="create-event-btn">
+                <span style="font-size:1.2em;">&#128197;</span> Nuevo Evento
+            </button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <!-- Pantalla principal -->
+        <div id="home-screen">
+            <header>
+                <h1>Gestor de Asistencias a Eventos</h1>
+            </header>
+
+            <div class="filter-bar">
+                <button class="filter-btn active" id="filter-all">Todos</button>
+                <button class="filter-btn" id="filter-active">Activos</button>
+                <button class="filter-btn" id="filter-inactive">Inactivos</button>
+                <button class="filter-btn" id="filter-finished">Finalizados</button>
+            </div>
+
+            <div class="card-grid" id="events-container">
+                <!-- El contenido de eventos se cargará dinámicamente -->
+            </div>
+        </div>
+
+        <!-- Pantalla de detalle de evento -->
+        <div id="detail-screen" style="display: none;">
+            <div class="detail-container">
+                <div class="detail-header">
+                    <button class="btn btn-secondary" id="back-btn">
+                        <span class="btn-icon">←</span>
+                        Volver
+                    </button>
+                    <h2 class="detail-title" id="event-title">Título del Evento</h2>
+                    <button class="btn" id="add-attendee-btn">
+                        <span class="btn-icon">+</span>
+                        Registrar Asistente
+                    </button>
+                </div>
+
+                <table class="attendees-table">
+                    <thead>
+                        <tr>
+                            <th>Nombre completo</th>
+                            <th>Correo electrónico</th>
+                            <th>Teléfono</th>
+                            <th>Asiento asignado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendees-list">
+                        <!-- Los asistentes se cargarán dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Modal para crear/editar evento -->
+        <iframe id="event-modal" class="modal" src="event-form-modal.html"></iframe>
+
+        <!-- Modal para crear/editar asistente -->
+        <div class="modal" id="attendee-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="attendee-modal-title">Registrar Asistente</h3>
+                    <button class="close-modal" id="close-attendee-modal">&times;</button>
+                </div>
+                <form id="attendee-form">
+                    <input type="hidden" id="attendee-id">
+                    <div class="form-group">
+                        <label for="fullname">Nombre completo *</label>
+                        <input type="text" id="fullname" required>
+                        <p class="error-message" id="fullname-error">Este campo es obligatorio</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Correo electrónico *</label>
+                        <input type="email" id="email" required>
+                        <p class="error-message" id="email-error">Introduce un correo electrónico válido</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Número de teléfono (opcional)</label>
+                        <input type="tel" id="phone">
+                    </div>
+                    <div class="form-group">
+                        <label for="seat">Asiento asignado *</label>
+                        <input type="text" id="seat" placeholder="Ej: Fila A - Asiento 5" required>
+                        <p class="error-message" id="seat-error">Este campo es obligatorio</p>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="cancel-attendee-btn">Cancelar</button>
+                        <button type="submit" class="btn" id="save-attendee-btn">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <script src="event-storage.js"></script>
+        <script>
+            // Inicializar el almacenamiento
+            const eventStorage = new EventStorage();
+
+            // Función para renderizar eventos
+            function renderEvents(filter = 'all') {
+                const eventsContainer = document.getElementById('events-container');
+                const events = eventStorage.getEvents(filter);
+                
+                eventsContainer.innerHTML = events.map(event => `
+                    <div class="event-card" data-id="${event.id}">
+                        <div class="event-header">
+                            <div>
+                                <h3 class="event-title">${event.name}</h3>
+                                <p class="event-date">${event.date} ${event.time || ''}</p>
+                            </div>
+                            <span class="status-badge status-${event.status}">${event.status}</span>
+                        </div>
+                        <div class="event-info">
+                            <p class="info-item">Ubicación: <span class="info-value">${event.location}</span></p>
+                            <p class="info-item">Categoría: <span class="info-value">${event.category}</span></p>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Gestión del modal de evento
+            const eventModal = document.getElementById('event-modal');
+            const createEventBtn = document.getElementById('create-event-btn');
+
+            // Mostrar el modal
+            createEventBtn.addEventListener('click', () => {
+                eventModal.classList.add('show');
+            });
+
+            // Escuchar mensajes del iframe
+            window.addEventListener('message', function(event) {
+                if (event.data === 'closeModal') {
+                    eventModal.classList.remove('show');
+                } else if (event.data.type === 'eventCreated') {
+                    eventModal.classList.remove('show');
+                    const newEvent = eventStorage.addEvent(event.data.eventData);
+                    renderEvents();
+                }
+            });
+
+            // Agregar listeners para los filtros
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    const filter = e.target.id.replace('filter-', '');
+                    renderEvents(filter);
+                });
+            });
+
+            // Añadir manejador de clic para las tarjetas de evento
+            document.getElementById('events-container').addEventListener('click', (e) => {
+                const eventCard = e.target.closest('.event-card');
+                if (eventCard) {
+                    const eventId = eventCard.dataset.id;
+                    // Redirigir a la página de gestión de asientos con el ID del evento
+                    window.location.href = `gestion-evento.html?eventId=${eventId}`;
+                }
+            });
+
+            // Hacer las tarjetas de evento visualmente clickeables
+            const styleSheet = document.createElement("style");
+            styleSheet.textContent = `
+                .event-card {
+                    cursor: pointer;
+                    transition: transform 0.2s, box-shadow 0.2s;
+                }
+                .event-card:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                }
+            `;
+            document.head.appendChild(styleSheet);
+
+            // Cargar eventos iniciales
+            renderEvents();
+            
+            // El resto de tu código JavaScript permanece igual
+            // Ejemplos de IDs disponibles:
+            // - Botones:
+            //   - create-event-btn: Botón para crear nuevo evento
+            //   - back-btn: Botón para volver a la pantalla principal
+            //   - add-attendee-btn: Botón para agregar asistente
+            //   - save-event-btn: Botón para guardar evento
+            //   - cancel-event-btn: Botón para cancelar creación/edición de evento
+            //   - save-attendee-btn: Botón para guardar asistente
+            //   - cancel-attendee-btn: Botón para cancelar creación/edición de asistente
+            //   - filter-all, filter-active, filter-inactive, filter-finished: Botones de filtro
+            
+            // - Contenedores:
+            //   - home-screen: Pantalla principal
+            //   - detail-screen: Pantalla de detalle de evento
+            //   - event-modal: Modal de creación/edición de evento
+            //   - attendee-modal: Modal de creación/edición de asistente
+            //   - events-container: Contenedor donde se mostrarán los eventos
+            //   - attendees-list: Tabla donde se mostrarán los asistentes
+            
+            // - Formularios:
+            //   - event-form: Formulario de evento
+            //   - attendee-form: Formulario de asistente
+        </script>
+    </div>
+
+    <!-- Pie de página institucional -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div>
+                <h3>Gestor de Asientos de Evento</h3>
+                <p>
+                    Sistema de gestión de eventos y asistentes desarrollado<br>
+                    para la Universidad Autónoma de Tamaulipas.
+                </p>
+            </div>
+            <div>
+                <h3>Enlaces Rápidos</h3>
+                <ul>
+                    <li><a href="#">Política de Privacidad</a></li>
+                    <li><a href="#">Términos de Uso</a></li>
+                    <li><a href="#">Soporte Técnico</a></li>
+                    <li><a href="#">Contacto</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3>Contacto</h3>
+                <ul>
+                    <li>Universidad Autónoma de Tamaulipas</li>
+                    <li>Centro Universitario Victoria</li>
+                    <li>Ciudad Victoria, Tamaulipas, México</li>
+                    <li>CP 87000</li>
+                    <li>Tel: (834) 318 1800</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2024 Universidad Autónoma de Tamaulipas. Todos los derechos reservados.
+        </div>
+    </footer>
+</body>
+</html>

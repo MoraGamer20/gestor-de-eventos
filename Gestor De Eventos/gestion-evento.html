@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Organización del Evento</title>
+  <style>
+    /* Barra superior estilo institucional */
+    .navbar {
+      background: #07405a;
+      color: #fff;
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      height: 80px;
+      justify-content: space-between;
+    }
+    .navbar .logo-titulo {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+    .navbar img {
+      height: 48px;
+      margin-right: 8px;
+    }
+    .navbar .titulo {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 2px;
+    }
+    .navbar .subtitulo {
+      font-size: 1rem;
+      font-weight: normal;
+      margin-top: -6px;
+      color: #cfe3f2;
+    }
+    .navbar .menu {
+      display: flex;
+      gap: 28px;
+      align-items: center;
+    }
+    .navbar .menu a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 1.1rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .navbar .menu a:hover {
+      color: #ffb366;
+    }
+    .navbar .btn-nuevo-evento {
+      background: #e76a24;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      padding: 10px 22px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      transition: background 0.2s;
+    }
+    .navbar .btn-nuevo-evento:hover {
+      background: #c95a1e;
+    }
+    /* Pie de página institucional */
+    .footer {
+      background: #07405a;
+      color: #fff;
+      padding: 40px 0 20px 0;
+      margin-top: 40px;
+    }
+    .footer .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      gap: 40px;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    .footer h3 {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+    .footer ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .footer ul li {
+      margin-bottom: 7px;
+    }
+    .footer a {
+      color: #cfe3f2;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer a:hover {
+      color: #ffb366;
+    }
+    .footer .footer-bottom {
+      text-align: center;
+      color: #cfe3f2;
+      font-size: 0.95rem;
+      margin-top: 25px;
+    }
+    /* Ajustes para el contenido principal */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    label {
+      font-weight: bold;
+      margin-top: 10px;
+      display: block;
+    }
+
+    select, input {
+      padding: 8px;
+      margin-bottom: 10px;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .contenedor {
+      display: flex;
+      gap: 30px;
+      margin-top: 20px;
+    }
+
+    .tabla-asistentes, .asientos-asignados {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      flex: 1;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .acciones button {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      color: white;
+      margin-right: 5px;
+      cursor: pointer;
+    }
+
+    .btn-agregar, .btn-configurar {
+      background-color: #007bff;
+    }
+
+    .btn-editar {
+      background-color: #28a745;
+    }
+
+    .btn-eliminar {
+      background-color: #dc3545;
+    }
+    
+    .configuracion {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .flex-container {
+      display: flex;
+      gap: 10px;
+    }
+
+    .grid-asientos {
+      display: grid;
+      grid-template-columns: repeat(var(--max-asientos), minmax(60px, 1fr));
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .espacio-vacio {
+      visibility: hidden;
+    }
+
+    .fila-asientos {
+      display: contents;
+    }
+
+    .asiento {
+      padding: 10px;
+      text-align: center;
+      background-color: #e9ecef;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .asiento.ocupado {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .asiento.seleccionado {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .main-content {
+      max-width: 1200px;
+      margin: 40px auto 0 auto;
+      padding: 0 30px;
+    }
+
+    /* Estilos para botones */
+    .btn {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+
+    .btn:hover {
+      background-color: #0056b3;
+    }
+
+    .btn-secondary {
+      background-color: #6c757d;
+    }
+
+    .btn-secondary:hover {
+      background-color: #5a6268;
+    }
+
+    .btn-icon {
+      font-size: 1.2em;
+    }
+  </style>
+</head>
+<body>
+  <!-- Barra superior institucional -->
+  <div class="navbar">
+    <div class="logo-titulo">
+      <!-- Quitar la imagen del escudo de la UAT -->
+      <!-- <img src="escudo-uat.png" alt="Escudo UAT" /> -->
+      <div>
+        <div class="titulo">Gestor de Asientos de Evento</div>
+        <div class="subtitulo">Universidad Autónoma de Tamaulipas</div>
+      </div>
+    </div>
+    <div class="menu">
+      <a href="event-seat-manager-interface.html">Inicio</a>
+      <a href="event-seat-manager-interface.html#eventos">Eventos</a>
+      <a href="event-seat-manager-interface.html#reportes">Reportes</a>
+      <a href="event-seat-manager-interface.html#ayuda">Ayuda</a>
+      <button class="btn-nuevo-evento" onclick="window.location.href='nuevo-evento.html'">
+        <span style="font-size:1.2em;">&#128197;</span> Nuevo Evento
+      </button>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <h1>Gestión de Asistentes</h1>
+
+    <!-- Buscador de asistentes confirmados -->
+    <div style="margin-bottom: 24px; display: flex; align-items: center; gap: 12px;">
+      <input
+        type="text"
+        id="buscador-asistentes"
+        placeholder="Buscar asistente por nombre, correo o asiento..."
+        style="flex:1; padding:10px 14px; border-radius:5px; border:1px solid #ccc; font-size:1rem;"
+        oninput="filtrarAsistentesConfirmados()"
+      />
+    </div>
+    <div id="resultados-busqueda" style="margin-bottom: 24px; display:none;">
+      <table style="width:100%; background:#fff; border-radius:8px; box-shadow:0 0 8px #0001;">
+        <thead>
+          <tr style="background:#007bff; color:#fff;">
+            <th style="padding:10px;">Asiento</th>
+            <th style="padding:10px;">Nombre</th>
+            <th style="padding:10px;">Correo</th>
+          </tr>
+        </thead>
+        <tbody id="resultados-busqueda-body">
+          <!-- Resultados dinámicos -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Botones estéticos como los del inicio -->
+    <div style="margin-bottom: 20px; display: flex; gap: 10px;">
+      <button class="btn" onclick="guardarCambiosYSalir()">
+        <span class="btn-icon">&#128190;</span>
+        Guardar Cambios
+      </button>
+      <button class="btn btn-secondary" onclick="volverInicio()">
+        <span class="btn-icon">&#8592;</span>
+        Volver al Inicio
+      </button>
+    </div>
+
+    <div class="configuracion">
+      <h2>Configuración de Asientos</h2>
+
+      <label for="tipoOrganizacion">¿Cómo deseas organizar los asientos?</label>
+      <select id="tipoOrganizacion" onchange="cambiarModo()">
+        <option value="mesa">Por número de mesa</option>
+        <option value="filaAsiento">Por fila y número de asiento</option>
+      </select>
+
+      <div id="campo-filas-asientos" style="display: none;">
+        <h3>Configuración de Filas</h3>
+        <div class="flex-container">
+          <div>
+            <label for="numFilas">Número de filas:</label>
+            <input type="number" id="numFilas" min="1" max="26" value="5" placeholder="Número de filas (máx. 26)">
+          </div>
+          <div>
+            <label for="asientosPorFila">Asientos por fila:</label>
+            <input type="number" id="asientosPorFila" min="1" value="10" placeholder="Asientos por fila">
+          </div>
+        </div>
+        <button class="btn" onclick="generarAsientos()">
+          <span class="btn-icon">&#128451;</span>
+          Generar asientos
+        </button>
+
+        <!-- Nueva sección para configuración individual de filas -->
+        <div id="configuracion-filas-individual" style="margin-top: 20px;">
+          <h3>Configuración Individual de Filas</h3>
+          <div class="flex-container">
+            <div>
+              <label for="filaIndividual">Seleccionar fila:</label>
+              <select id="filaIndividual">
+                <!-- Se llenará dinámicamente -->
+              </select>
+              <label for="asientosFila" style="margin-top: 10px;">Asientos en esta fila:</label>
+              <input type="number" id="asientosFila" min="1" value="10">
+            </div>
+          </div>
+          <button class="btn btn-secondary" onclick="actualizarFilaIndividual()" style="margin-top: 10px;">
+            <span class="btn-icon">&#128393;</span>
+            Actualizar Fila
+          </button>
+          <div id="resumen-filas" style="margin-top: 10px;">
+            <!-- Aquí se mostrará el resumen de la configuración de cada fila -->
+          </div>
+        </div>
+      </div>
+
+      <div id="campo-mesas" style="display: block;">
+        <h3>Configuración de Mesas</h3>
+        <div class="flex-container">
+          <div>
+            <label for="numMesas">Número de mesas:</label>
+            <input type="number" id="numMesas" min="1" value="10" placeholder="Número de mesas">
+          </div>
+          <div>
+            <label for="asientosPorMesa">Asientos por mesa:</label>
+            <input type="number" id="asientosPorMesa" min="1" value="8" placeholder="Asientos por mesa">
+          </div>
+        </div>
+        <button class="btn" onclick="generarMesas()">
+          <span class="btn-icon">&#128451;</span>
+          Generar mesas
+        </button>
+
+        <!-- Nueva sección para configuración individual de mesas -->
+        <div id="configuracion-mesas-individual" style="margin-top: 20px;">
+          <h3>Configuración Individual de Mesas</h3>
+          <div>
+            <label for="mesaIndividual">Seleccionar mesa:</label>
+            <select id="mesaIndividual">
+              <!-- Se llenará dinámicamente -->
+            </select>
+            <label for="asientosMesa" style="margin-top: 10px;">Asientos en esta mesa:</label>
+            <input type="number" id="asientosMesa" min="1" value="8">
+          </div>
+          <button class="btn btn-secondary" onclick="actualizarMesaIndividual()">
+            <span class="btn-icon">&#128393;</span>
+            Actualizar Mesa
+          </button>
+          <div id="resumen-mesas" style="margin-top: 10px;">
+            <!-- Aquí se mostrará el resumen de la configuración de cada mesa -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="contenedor">
+      <div class="tabla-asistentes">
+        <h2>Formulario</h2>
+        <input type="text" id="nombre" placeholder="Nombre completo">
+        <input type="email" id="correo" placeholder="Correo electrónico">
+        
+        <div id="seleccion-asiento">
+          <label>Selecciona un asiento disponible:</label>
+          <select id="asientosDisponibles">
+            <option value="">-- Selecciona un asiento --</option>
+          </select>
+        </div>
+
+        <button class="btn" onclick="agregarAsistente()">
+          <span class="btn-icon">&#10133;</span>
+          Agregar
+        </button>
+
+        <h2>Lista de Asistentes</h2>
+        <table id="tabla-asistentes">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Nombre</th>
+              <th>Correo</th>
+              <th>Ubicación</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- dinámico -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="asientos-asignados">
+        <h2>Mapa de Asientos</h2>
+        <div id="visualizacion-asientos" class="grid-asientos"></div>
+      </div>
+    </div>
+
+    <script>
+      let asistentes = [];
+      let contador = 1;
+      let idEditando = null;
+      let asientosDisponibles = [];
+      let asientosOcupados = {};
+      let modoActual = "mesa";
+      let currentEventId = null;
+
+      function getEventIdFromUrl() {
+          const urlParams = new URLSearchParams(window.location.search);
+          return urlParams.get('eventId');
+      }
+
+      function loadEventConfiguration() {
+          const eventId = getEventIdFromUrl();
+          if (eventId) {
+              currentEventId = eventId;
+              const eventConfig = localStorage.getItem(`event_${eventId}_config`);
+              if (eventConfig) {
+                  const config = JSON.parse(eventConfig);
+                  document.getElementById('tipoOrganizacion').value = config.tipo || 'mesa';
+                  document.getElementById('numMesas').value = config.numMesas || 10;
+                  document.getElementById('asientosPorMesa').value = config.asientosPorMesa || 8;
+                  document.getElementById('numFilas').value = config.numFilas || 5;
+                  document.getElementById('asientosPorFila').value = config.asientosPorFila || 10;
+                  
+                  const savedAsistentes = localStorage.getItem(`event_${eventId}_asistentes`);
+                  if (savedAsistentes) {
+                      asistentes = JSON.parse(savedAsistentes);
+                      asientosOcupados = {};
+                      asistentes.forEach(a => {
+                          asientosOcupados[a.ubicacion] = a.nombre;
+                      });
+                  }
+              }
+          }
+          cambiarModo();
+          actualizarSelectorFilas();
+          actualizarSelectorMesas();
+      }
+
+      function guardarConfiguracion() {
+          if (!currentEventId) return;
+          
+          const config = {
+              tipo: document.getElementById('tipoOrganizacion').value,
+              numMesas: document.getElementById('numMesas').value,
+              asientosPorMesa: document.getElementById('asientosPorMesa').value,
+              numFilas: document.getElementById('numFilas').value,
+              asientosPorFila: document.getElementById('asientosPorFila').value
+          };
+          
+          localStorage.setItem(`event_${currentEventId}_config`, JSON.stringify(config));
+          localStorage.setItem(`event_${currentEventId}_asistentes`, JSON.stringify(asistentes));
+      }
+
+      function guardarCambiosYSalir() {
+        guardarConfiguracion();
+        alert("Cambios guardados correctamente");
+        volverInicio();
+      }
+
+      function volverInicio() {
+        window.location.href = 'event-seat-manager-interface.html';
+      }
+
+      function cambiarModo() {
+        modoActual = document.getElementById("tipoOrganizacion").value;
+        document.getElementById("campo-mesas").style.display = modoActual === "mesa" ? "block" : "none";
+        document.getElementById("campo-filas-asientos").style.display = modoActual === "filaAsiento" ? "block" : "none";
+        
+        asientosDisponibles = [];
+        asientosOcupados = {};
+        actualizarListaAsientosDisponibles();
+        actualizarVisualizacionAsientos();
+        
+        if (modoActual === "mesa") {
+          generarMesas();
+        } else {
+          generarAsientos();
+        }
+      }
+
+      function generarAsientos() {
+        const numFilas = parseInt(document.getElementById("numFilas").value, 10) || 5;
+        const asientosPorFila = parseInt(document.getElementById("asientosPorFila").value, 10) || 10;
+        const configuracionFilas = obtenerConfiguracionFilas();
+        
+        asientosDisponibles = [];
+        
+        const maxFilas = Math.min(numFilas, 26);
+        
+        for (let i = 0; i < maxFilas; i++) {
+          const letraFila = String.fromCharCode(65 + i);
+          const cantidad = configuracionFilas[letraFila] || asientosPorFila;
+          
+          for (let j = 1; j <= cantidad; j++) {
+            asientosDisponibles.push(`${letraFila}${j}`);
+          }
+        }
+        
+        actualizarListaAsientosDisponibles();
+        actualizarVisualizacionAsientos();
+        actualizarSelectorFilas();
+      }
+
+      function generarMesas() {
+          const numMesas = parseInt(document.getElementById("numMesas").value, 10) || 10;
+          const asientosPorMesa = parseInt(document.getElementById("asientosPorMesa").value, 10) || 8;
+          const configuracionMesas = obtenerConfiguracionMesas();
+          
+          asientosDisponibles = [];
+          
+          for (let i = 1; i <= numMesas; i++) {
+              const cantidad = configuracionMesas[i] || asientosPorMesa;
+              for (let j = 1; j <= cantidad; j++) {
+                  asientosDisponibles.push(`Mesa ${i}, Asiento ${j}`);
+              }
+          }
+          
+          actualizarListaAsientosDisponibles();
+          actualizarVisualizacionAsientos();
+          actualizarSelectorMesas();
+      }
+
+      function actualizarListaAsientosDisponibles() {
+        const selectAsientos = document.getElementById("asientosDisponibles");
+        selectAsientos.innerHTML = '<option value="">-- Selecciona un asiento --</option>';
+        
+        const disponibles = asientosDisponibles.filter(a => !asientosOcupados[a]);
+        
+        disponibles.forEach(asiento => {
+          const option = document.createElement("option");
+          option.value = asiento;
+          option.textContent = asiento;
+          selectAsientos.appendChild(option);
+        });
+      }
+
+      function actualizarVisualizacionAsientos() {
+          const container = document.getElementById("visualizacion-asientos");
+          container.innerHTML = "";
+          
+          if (asientosDisponibles.length === 0) {
+              container.innerHTML = "<p>Por favor, configura y genera los asientos primero.</p>";
+              return;
+          }
+
+          // Encontrar el número máximo de asientos por fila
+          let maxAsientosPorFila = 0;
+          if (modoActual === "filaAsiento") {
+              const filas = {};
+              asientosDisponibles.forEach(asiento => {
+                  const fila = asiento.charAt(0);
+                  const numero = parseInt(asiento.slice(1));
+                  filas[fila] = filas[fila] ? Math.max(filas[fila], numero) : numero;
+              });
+              maxAsientosPorFila = Math.max(...Object.values(filas));
+          } else {
+              const mesas = {};
+              asientosDisponibles.forEach(asiento => {
+                  const [mesa, numAsiento] = asiento.split(", Asiento ");
+                  const mesaNum = mesa.replace("Mesa ", "");
+                  mesas[mesaNum] = mesas[mesaNum] ? Math.max(mesas[mesaNum], parseInt(numAsiento)) : parseInt(numAsiento);
+              });
+              maxAsientosPorFila = Math.max(...Object.values(mesas));
+          }
+
+          // Establecer la variable CSS para el grid
+          container.style.setProperty('--max-asientos', maxAsientosPorFila);
+
+          if (modoActual === "filaAsiento") {
+              // Agrupar asientos por fila
+              const filas = {};
+              asientosDisponibles.forEach(asiento => {
+                  const fila = asiento.charAt(0);
+                  if (!filas[fila]) filas[fila] = new Array(maxAsientosPorFila).fill(null);
+                  const numero = parseInt(asiento.slice(1)) - 1;
+                  filas[fila][numero] = asiento;
+              });
+
+              // Crear el layout manteniendo espacios vacíos
+              Object.keys(filas).sort().forEach(fila => {
+                  const filaDiv = document.createElement('div');
+                  filaDiv.className = 'fila-asientos';
+                  
+                  filas[fila].forEach((asiento, index) => {
+                      const div = document.createElement('div');
+                      if (asiento) {
+                          div.className = "asiento" + (asientosOcupados[asiento] ? " ocupado" : "");
+                          div.textContent = asiento;
+                          div.title = asientosOcupados[asiento] ? `Ocupado por: ${asientosOcupados[asiento]}` : "Disponible";
+                          div.addEventListener("click", () => seleccionarAsiento(asiento));
+                      } else {
+                          div.className = "asiento espacio-vacio";
+                          div.textContent = "—";
+                      }
+                      container.appendChild(div);
+                  });
+              });
+          } else {
+              // Lógica similar para mesas
+              const mesas = {};
+              asientosDisponibles.forEach(asiento => {
+                  const [mesa, numAsiento] = asiento.split(", Asiento ");
+                  const mesaNum = parseInt(mesa.replace("Mesa ", ""));
+                  if (!mesas[mesaNum]) mesas[mesaNum] = new Array(maxAsientosPorFila).fill(null);
+                  mesas[mesaNum][parseInt(numAsiento) - 1] = asiento;
+              });
+
+              Object.keys(mesas).sort((a, b) => a - b).forEach(mesa => {
+                  const mesaDiv = document.createElement('div');
+                  mesaDiv.className = 'fila-asientos';
+                  
+                  mesas[mesa].forEach((asiento, index) => {
+                      const div = document.createElement('div');
+                      if (asiento) {
+                          div.className = "asiento" + (asientosOcupados[asiento] ? " ocupado" : "");
+                          div.textContent = asiento;
+                          div.title = asientosOcupados[asiento] ? `Ocupado por: ${asientosOcupados[asiento]}` : "Disponible";
+                          div.addEventListener("click", () => seleccionarAsiento(asiento));
+                      } else {
+                          div.className = "asiento espacio-vacio";
+                          div.textContent = "—";
+                      }
+                      container.appendChild(div);
+                  });
+              });
+          }
+      }
+
+      function seleccionarAsiento(asiento) {
+        if (asientosOcupados[asiento]) {
+          alert(`Este asiento está ocupado por: ${asientosOcupados[asiento]}`);
+          return;
+        }
+        
+        document.getElementById("asientosDisponibles").value = asiento;
+        
+        document.querySelectorAll(".asiento.seleccionado").forEach(el => {
+          el.classList.remove("seleccionado");
+        });
+        
+        document.querySelectorAll(".asiento").forEach(el => {
+          if (el.textContent === asiento) {
+            el.classList.add("seleccionado");
+          }
+        });
+      }
+
+      function agregarAsistente() {
+        const nombre = document.getElementById('nombre').value.trim();
+        const correo = document.getElementById('correo').value.trim();
+        const ubicacion = document.getElementById('asientosDisponibles').value;
+
+        if (!nombre || !correo || !ubicacion) {
+          alert("Por favor, completa todos los campos y selecciona un asiento.");
+          return;
+        }
+
+        if (idEditando) {
+          const index = asistentes.findIndex(a => a.id === idEditando);
+          if (index !== -1) {
+            delete asientosOcupados[asistentes[index].ubicacion];
+            asistentes[index] = { id: idEditando, nombre, correo, ubicacion };
+            asientosOcupados[ubicacion] = nombre;
+          }
+          idEditando = null;
+        } else {
+          asistentes.push({ id: contador++, nombre, correo, ubicacion });
+          asientosOcupados[ubicacion] = nombre;
+        }
+
+        actualizarTabla();
+        actualizarListaAsientosDisponibles();
+        actualizarVisualizacionAsientos();
+        limpiarCampos();
+        guardarConfiguracion();
+      }
+
+      function actualizarTabla() {
+        const tbody = document.querySelector("#tabla-asistentes tbody");
+        tbody.innerHTML = "";
+
+        asistentes.forEach((a, i) => {
+          const fila = document.createElement("tr");
+          fila.innerHTML = `
+            <td>${i + 1}</td>
+            <td>${a.nombre}</td>
+            <td>${a.correo}</td>
+            <td>${a.ubicacion}</td>
+            <td class="acciones">
+              <button class="btn-editar" onclick="editarAsistente(${a.id})">Editar</button>
+              <button class="btn-eliminar" onclick="eliminarAsistente(${a.id})">Eliminar</button>
+            </td>
+          `;
+          tbody.appendChild(fila);
+        });
+      }
+
+      function eliminarAsistente(id) {
+        if (confirm("¿Deseas eliminar este asistente?")) {
+          const asistente = asistentes.find(a => a.id === id);
+          if (asistente) {
+            delete asientosOcupados[asistente.ubicacion];
+          }
+          
+          asistentes = asistentes.filter(a => a.id !== id);
+          actualizarTabla();
+          actualizarListaAsientosDisponibles();
+          actualizarVisualizacionAsientos();
+          guardarConfiguracion();
+        }
+      }
+
+      function editarAsistente(id) {
+        const asistente = asistentes.find(a => a.id === id);
+        if (!asistente) return;
+
+        idEditando = id;
+        document.getElementById("nombre").value = asistente.nombre;
+        document.getElementById("correo").value = asistente.correo;
+        document.getElementById("asientosDisponibles").value = asistente.ubicacion;
+        
+        document.querySelectorAll(".asiento").forEach(el => {
+          el.classList.remove("seleccionado");
+          if (el.textContent === asistente.ubicacion) {
+            el.classList.add("seleccionado");
+          }
+        });
+      }
+
+      function limpiarCampos() {
+        document.getElementById("nombre").value = "";
+        document.getElementById("correo").value = "";
+        document.getElementById("asientosDisponibles").value = "";
+        
+        document.querySelectorAll(".asiento.seleccionado").forEach(el => {
+          el.classList.remove("seleccionado");
+        });
+      }
+
+      function actualizarSelectorFilas() {
+          const numFilas = parseInt(document.getElementById("numFilas").value, 10) || 5;
+          const selectorFilas = document.getElementById("filaIndividual");
+          selectorFilas.innerHTML = '';
+          
+          for (let i = 0; i < Math.min(numFilas, 26); i++) {
+              const letraFila = String.fromCharCode(65 + i);
+              const option = document.createElement("option");
+              option.value = letraFila;
+              option.textContent = `Fila ${letraFila}`;
+              selectorFilas.appendChild(option);
+          }
+          actualizarResumenFilas();
+      }
+
+      function actualizarFilaIndividual() {
+          const fila = document.getElementById("filaIndividual").value;
+          const numAsientos = parseInt(document.getElementById("asientosFila").value, 10);
+          
+          if (!fila || isNaN(numAsientos) || numAsientos < 1) {
+              alert("Por favor, ingrese valores válidos");
+              return;
+          }
+
+          const configuracionFilas = obtenerConfiguracionFilas();
+          configuracionFilas[fila] = numAsientos;
+          localStorage.setItem(`event_${currentEventId}_filas`, JSON.stringify(configuracionFilas));
+          
+          actualizarResumenFilas();
+          generarAsientos();
+      }
+
+      function obtenerConfiguracionFilas() {
+          if (!currentEventId) return {};
+          const config = localStorage.getItem(`event_${currentEventId}_filas`);
+          return config ? JSON.parse(config) : {};
+      }
+
+      function actualizarResumenFilas() {
+          const resumenDiv = document.getElementById("resumen-filas");
+          const configuracion = obtenerConfiguracionFilas();
+          
+          let html = '<h4>Resumen de configuración:</h4><ul>';
+          for (const [fila, asientos] of Object.entries(configuracion)) {
+              html += `<li>Fila ${fila}: ${asientos} asientos</li>`;
+          }
+          html += '</ul>';
+          
+          resumenDiv.innerHTML = html;
+      }
+
+      function actualizarSelectorMesas() {
+          const numMesas = parseInt(document.getElementById("numMesas").value, 10) || 10;
+          const selectorMesas = document.getElementById("mesaIndividual");
+          selectorMesas.innerHTML = '';
+          
+          for (let i = 1; i <= numMesas; i++) {
+              const option = document.createElement("option");
+              option.value = i;
+              option.textContent = `Mesa ${i}`;
+              selectorMesas.appendChild(option);
+          }
+          actualizarResumenMesas();
+      }
+
+      function actualizarMesaIndividual() {
+          const mesa = document.getElementById("mesaIndividual").value;
+          const numAsientos = parseInt(document.getElementById("asientosMesa").value, 10);
+          
+          if (!mesa || isNaN(numAsientos) || numAsientos < 1) {
+              alert("Por favor, ingrese valores válidos");
+              return;
+          }
+
+          const configuracionMesas = obtenerConfiguracionMesas();
+          configuracionMesas[mesa] = numAsientos;
+          localStorage.setItem(`event_${currentEventId}_mesas`, JSON.stringify(configuracionMesas));
+          
+          actualizarResumenMesas();
+          generarMesas();
+      }
+
+      function obtenerConfiguracionMesas() {
+          if (!currentEventId) return {};
+          const config = localStorage.getItem(`event_${currentEventId}_mesas`);
+          return config ? JSON.parse(config) : {};
+      }
+
+      function actualizarResumenMesas() {
+          const resumenDiv = document.getElementById("resumen-mesas");
+          const configuracion = obtenerConfiguracionMesas();
+          
+          let html = '<h4>Resumen de configuración:</h4><ul>';
+          for (const [mesa, asientos] of Object.entries(configuracion)) {
+              html += `<li>Mesa ${mesa}: ${asientos} asientos</li>`;
+          }
+          html += '</ul>';
+          
+          resumenDiv.innerHTML = html;
+      }
+
+      // Buscador de asistentes confirmados
+      function filtrarAsistentesConfirmados() {
+        const query = document.getElementById('buscador-asistentes').value.trim().toLowerCase();
+        const resultadosDiv = document.getElementById('resultados-busqueda');
+        const resultadosBody = document.getElementById('resultados-busqueda-body');
+        if (!query) {
+          resultadosDiv.style.display = 'none';
+          resultadosBody.innerHTML = '';
+          return;
+        }
+        // Filtrar por nombre, correo o asiento
+        const filtrados = asistentes.filter(a =>
+          (a.nombre && a.nombre.toLowerCase().includes(query)) ||
+          (a.correo && a.correo.toLowerCase().includes(query)) ||
+          (a.ubicacion && a.ubicacion.toLowerCase().includes(query))
+        );
+        if (filtrados.length === 0) {
+          resultadosBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#888;">No se encontraron asistentes.</td></tr>`;
+        } else {
+          resultadosBody.innerHTML = filtrados.map(a =>
+            `<tr>
+              <td style="padding:8px;">${a.ubicacion}</td>
+              <td style="padding:8px;">${a.nombre}</td>
+              <td style="padding:8px;">${a.correo}</td>
+            </tr>`
+          ).join('');
+        }
+        resultadosDiv.style.display = 'block';
+      }
+
+      window.onload = function() {
+          loadEventConfiguration();
+      };
+    </script>
+  </div>
+
+  <!-- Pie de página institucional -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div>
+        <h3>Gestor de Asientos de Evento</h3>
+        <p>
+          Sistema de gestión de eventos y asistentes desarrollado<br>
+          para la Universidad Autónoma de Tamaulipas.
+        </p>
+      </div>
+      <div>
+        <h3>Enlaces Rápidos</h3>
+        <ul>
+          <li><a href="#">Política de Privacidad</a></li>
+          <li><a href="#">Términos de Uso</a></li>
+          <li><a href="#">Soporte Técnico</a></li>
+          <li><a href="#">Contacto</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contacto</h3>
+        <ul>
+          <li>Universidad Autónoma de Tamaulipas</li>
+          <li>Centro Universitario Victoria</li>
+          <li>Ciudad Victoria, Tamaulipas, México</li>
+          <li>CP 87000</li>
+          <li>Tel: (834) 318 1800</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2024 Universidad Autónoma de Tamaulipas. Todos los derechos reservados.
+    </div>
+  </footer>
+</body>
+</html>
