@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Asientos de Evento - Nuevo Evento</title>
+    <link rel="stylesheet" href="../../assets/css/modal.css">
+</head>
+<body>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Crear Nuevo Evento</h2>
+            <button type="button" class="close-modal" id="close-event-modal">&times;</button>
+        </div>
+        
+        <form id="event-form">
+            <input type="hidden" id="event-id">
+            <div class="form-group">
+                <label for="event-name">Nombre del evento<span class="required-marker">*</span></label>
+                <input type="text" id="event-name" name="event-name" placeholder="Ej: Conferencia Anual FCAV 2025" required>
+                <p class="error-message" id="event-name-error">El nombre del evento es obligatorio</p>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="event-date">Fecha del evento<span class="required-marker">*</span></label>
+                    <input type="date" id="event-date" name="event-date" required>
+                    <p class="error-message" id="event-date-error">Selecciona una fecha válida (no puede ser anterior a hoy)</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="event-time">Hora del evento</label>
+                    <input type="time" id="event-time" name="event-time">
+                    <p class="field-info">Recomendable para mejor organización</p>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="event-location">Ubicación<span class="required-marker">*</span></label>
+                <input type="text" id="event-location" name="event-location" placeholder="Ej: Auditorio 1" required>
+                <p class="error-message" id="event-location-error">La ubicación es obligatoria</p>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="event-category">Categoría del evento<span class="required-marker">*</span></label>
+                    <select id="event-category" name="event-category" required>
+                        <option value="" disabled selected>Selecciona una categoría</option>
+                        <option value="cultural">Cultural</option>
+                        <option value="academic">Académico</option>
+                        <option value="sports">Deportivo</option>
+                        <option value="meeting">Reunión</option>
+                        <option value="other">Otro</option>
+                    </select>
+                    <p class="error-message" id="event-category-error">Selecciona una categoría</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="event-status">Estado del evento<span class="required-marker">*</span></label>
+                    <select id="event-status" name="event-status" required>
+                        <option value="active" selected>Activo</option>
+                        <option value="inactive">Inactivo</option>
+                        <option value="finished">Finalizado</option>
+                    </select>
+                    <p class="error-message" id="event-status-error">Selecciona un estado</p>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="event-capacity">Capacidad máxima</label>
+                    <div class="input-with-icon">
+                        <input type="number" id="event-capacity" name="event-capacity" min="1" placeholder="Número de asistentes permitidos">
+                        <span class="input-icon">👥</span>
+                    </div>
+                    <p class="field-info">Opcional, para control de asistentes</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="event-color">Color del evento</label>
+                    <div class="color-picker-container">
+                        <div class="color-option selected" style="background-color: #4A90E2;" data-color="#4A90E2"></div>
+                        <div class="color-option" style="background-color: #66BB6A;" data-color="#66BB6A"></div>
+                        <div class="color-option" style="background-color: #FFA726;" data-color="#FFA726"></div>
+                        <div class="color-option" style="background-color: #EF5350;" data-color="#EF5350"></div>
+                        <div class="color-option" style="background-color: #AB47BC;" data-color="#AB47BC"></div>
+                        <div class="color-option" style="background-color: #26C6DA;" data-color="#26C6DA"></div>
+                    </div>
+                    <input type="hidden" id="event-color" name="event-color" value="#4A90E2">
+                    <p class="field-info">Opcional, para identificación visual</p>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="event-description">Descripción breve</label>
+                <textarea id="event-description" name="event-description" placeholder="Detalles adicionales sobre el evento..."></textarea>
+                <p class="field-info">Opcional, información relevante para los asistentes</p>
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="cancel-event-btn">Cancelar</button>
+                <button type="submit" class="btn btn-primary" id="save-event-btn">Guardar Evento</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="../../assets/js/components/event-form.js"></script>
+</body>
+</html>
